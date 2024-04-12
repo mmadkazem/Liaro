@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.9.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="SentryDotNet.AspNetCore" Version="1.4.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Liaro.Domain\Liaro.Domain.csproj" />
+    <ProjectReference Include="..\Share\Liaro.Share.Abstract\Liaro.Share.Abstract.csproj" />
+    <ProjectReference Include="..\Share\Liaro.Share\Liaro.Share.csproj" />
+  </ItemGroup>
+
 </Project>
