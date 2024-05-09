@@ -11,7 +11,7 @@ public sealed class RemoveShortLinkCommandHandler(IUnitOfWork uow)
         var shortLink = await _uow.ShortLinks.FindAsync(request);
         if (shortLink is null)
         {
-            throw new Exception();
+            throw new ShortLinkNotExistException();
         }
 
         _uow.ShortLinks.Remove(shortLink);

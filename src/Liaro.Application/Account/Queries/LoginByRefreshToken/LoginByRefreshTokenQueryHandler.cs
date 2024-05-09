@@ -4,12 +4,15 @@ public sealed class LoginByRefreshTokenQueryHandler
     : IRequestHandler<LoginByRefreshTokenQueryRequest, JwtTokensResponse>
 {
     private readonly IUnitOfWork _uow;
+    private readonly ISecurityService _securityService;
     private readonly ITokenFactoryService _tokenFactory;
 
     public LoginByRefreshTokenQueryHandler(IUnitOfWork uow,
+        ISecurityService securityService,
         ITokenFactoryService tokenFactory)
     {
         _uow = uow;
+        _securityService = securityService;
         _tokenFactory = tokenFactory;
     }
 
@@ -24,7 +27,7 @@ public sealed class LoginByRefreshTokenQueryHandler
         var result = await _tokenFactory.CreateJwtTokensAsync(token.User);
         await _uow.UserTokens
                 .AddUserTokenAsync(token.User, result.RefreshTokenSerial, result.AccessToken,
-                _tokenFactory.GetRefreshTokenSerial(request.RefreshToken));
+                _securityService.GetRefreshTokenSerial(request.RefreshToken));
 
         return new(result.AccessToken, result.RefreshToken);
     }

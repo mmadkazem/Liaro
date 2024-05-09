@@ -30,9 +30,9 @@ public sealed class LoginByMobileInitQueryHandler : IRequestHandler<LoginByMobil
         user.LoginCode = StringUtils.GetUniqueKey(6);
 
         var res = await _kavenegarService
-            .SendLoginCode(user.LoginCode, request.Mobile, user.DisplayName);
+            .SendLoginCode(user.LoginCode, request.Mobile, user.DisplayName) ?? throw new KavenegarNoResponseException();
 
-        if (res == null || res.@return.status != 200)
+        if (res.@return?.status != 200)
         {
             throw new KavenegarNoResponseException();
         }

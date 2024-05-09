@@ -13,7 +13,7 @@ public sealed class RedirectOtherIdCommandHandler(IUnitOfWork uow)
 
         if (shortLink is null)
         {
-            throw new Exception();
+            throw new ShortLinkNotExistException();
         }
 
         return shortLink.Target;

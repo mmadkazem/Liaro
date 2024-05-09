@@ -13,8 +13,7 @@ internal static class PersistanceExtension
 
         // DI DbContext
         services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("LiaroDb"),
-                b => b.MigrationsAssembly("Liaro")));
+                options.UseNpgsql(configuration.GetConnectionString("LiaroDb")));
         return services;
     }
 }

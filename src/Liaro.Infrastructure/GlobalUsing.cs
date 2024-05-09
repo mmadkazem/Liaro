@@ -1,3 +1,4 @@
+global using Liaro.Infrastructure.ExternalServices.DbInitializer;
 global using Liaro.Infrastructure.ExternalServices.Contracts;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Liaro.Infrastructure.ExternalServices.Security;

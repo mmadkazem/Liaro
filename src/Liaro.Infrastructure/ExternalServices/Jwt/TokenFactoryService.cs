@@ -4,27 +4,22 @@ namespace Liaro.Infrastructure.ExternalServices.Jwt;
 public class TokenFactoryService : ITokenFactoryService
 {
     private readonly ISecurityService _securityService;
-    private readonly IOptionsSnapshot<BearerTokensOptions> _configuration;
-    private readonly IEntityBaseRepository<UserRole> _roleRepository;
-    private readonly ILogger<TokenFactoryService> _logger;
+    private readonly IOptions<BearerTokensOptions> _configuration;
+    private readonly IUnitOfWork _uow;
 
     public TokenFactoryService(
         ISecurityService securityService,
-        IEntityBaseRepository<UserRole> roleRepository,
-        IOptionsSnapshot<BearerTokensOptions> configuration,
-        ILogger<TokenFactoryService> logger)
+        IOptions<BearerTokensOptions> configuration,
+        IUnitOfWork uow)
     {
         _securityService = securityService;
-        _securityService.CheckArgumentIsNull(nameof(_securityService));
-
-        _roleRepository = roleRepository;
-        _roleRepository.CheckArgumentIsNull(nameof(roleRepository));
+        _securityService.CheckArgumentIsNull(nameof(securityService));
 
         _configuration = configuration;
         _configuration.CheckArgumentIsNull(nameof(configuration));
 
-        _logger = logger;
-        _logger.CheckArgumentIsNull(nameof(logger));
+        _uow = uow;
+        _uow.CheckArgumentIsNull(nameof(uow));
     }
 
 
@@ -70,38 +65,7 @@ public class TokenFactoryService : ITokenFactoryService
         return (refreshTokenValue, refreshTokenSerial);
     }
 
-    public string GetRefreshTokenSerial(string refreshTokenValue)
-    {
-        if (string.IsNullOrWhiteSpace(refreshTokenValue))
-        {
-            return null;
-        }
 
-        ClaimsPrincipal decodedRefreshTokenPrincipal = null;
-        try
-        {
-            decodedRefreshTokenPrincipal = new JwtSecurityTokenHandler().ValidateToken(
-                refreshTokenValue,
-                new TokenValidationParameters
-                {
-                    RequireExpirationTime = true,
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.Key)),
-                    ValidateIssuerSigningKey = true, // verify signature to avoid tampering
-                    ValidateLifetime = true, // validate the expiration
-                    ClockSkew = TimeSpan.Zero // tolerance for the expiration date
-                },
-                out _
-            );
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Failed to validate refreshTokenValue: `{refreshTokenValue}`.");
-        }
-
-        return decodedRefreshTokenPrincipal?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.SerialNumber)?.Value;
-    }
 
     private async Task<(string AccessToken, IEnumerable<Claim> Claims)> createAccessTokenAsync(User user)
     {
@@ -123,13 +87,7 @@ public class TokenFactoryService : ITokenFactoryService
             };
 
         // add roles
-        var roles = await _roleRepository.GetAllQueryable()
-                            .Include(x => x.Role)
-                            .AsNoTracking()
-                            .Where(x => x.UserId == user.Id)
-                            .Select(x => x.Role)
-                            .OrderBy(x => x.Name)
-                            .ToListAsync();
+        var roles = await _uow.Users.FindUserRolesAsync(user.Id);
 
         foreach (var role in roles)
         {

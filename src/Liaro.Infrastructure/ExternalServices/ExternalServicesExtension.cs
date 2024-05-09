@@ -4,10 +4,11 @@ public static class ExternalServicesExtension
 {
     internal static IServiceCollection RegisterExternalServices(this IServiceCollection services)
     {
-        services.AddScoped<ITokenValidatorService, TokenValidatorService>();
+        // services.AddScoped<ITokenValidatorService, TokenValidatorService>();
+        services.AddSingleton<IDbInitializerService, DbInitializerService>();
         services.AddScoped<ITokenFactoryService, TokenFactoryService>();
         services.AddScoped<IKavenegarService, KavenegarService>();
-        services.AddScoped<ISecurityService, SecurityService>();
+        services.AddSingleton<ISecurityService, SecurityService>();
 
         return services;
     }

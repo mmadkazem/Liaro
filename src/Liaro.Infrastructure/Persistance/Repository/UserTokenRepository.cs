@@ -5,14 +5,10 @@ public class UserTokenRepository : IUserTokenRepository
 {
     private readonly ISecurityService _securityService;
     private readonly ApplicationDbContext _context;
-    private readonly IOptionsSnapshot<BearerTokensOptions> _configuration;
-    private readonly ITokenFactoryService _tokenFactoryService;
-
+    private readonly IOptions<BearerTokensOptions> _configuration;
     public UserTokenRepository(
-        IEntityBaseRepository<UserToken> tokens,
         ISecurityService securityService,
-        IOptionsSnapshot<BearerTokensOptions> configuration,
-        ITokenFactoryService tokenFactoryService,
+        IOptions<BearerTokensOptions> configuration,
         ApplicationDbContext context)
     {
 
@@ -23,9 +19,6 @@ public class UserTokenRepository : IUserTokenRepository
 
         _configuration = configuration;
         _configuration.CheckArgumentIsNull(nameof(configuration));
-
-        _tokenFactoryService = tokenFactoryService;
-        _tokenFactoryService.CheckArgumentIsNull(nameof(tokenFactoryService));
         _context = context;
     }
 
@@ -98,7 +91,7 @@ public class UserTokenRepository : IUserTokenRepository
 
     public async Task<UserToken> FindTokenAsync(string refreshToken)
     {
-        var refreshTokenSerial = _tokenFactoryService.GetRefreshTokenSerial(refreshToken);
+        var refreshTokenSerial = _securityService.GetRefreshTokenSerial(refreshToken);
         if (string.IsNullOrWhiteSpace(refreshTokenSerial))
         {
             return null;

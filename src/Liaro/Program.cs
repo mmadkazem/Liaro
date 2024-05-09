@@ -4,8 +4,10 @@ var configuration = builder.Configuration;
 
 var services = builder.Services;
 {
-    services.RegisterApiServices(configuration)
-            .RegisterInfrastructureServices(configuration);
+           services.RegisterApplicationServices()
+            .RegisterInfrastructureServices(configuration)
+            .RegisterSharedServices()
+            .RegisterApiServices(configuration);
 }
 var app = builder.Build();
 
@@ -16,8 +18,21 @@ var app = builder.Build();
         app.UseSwaggerUI();
     }
 
+    var dbInitializer = app.Services.GetService<IDbInitializerService>();
+    dbInitializer.Initialize();
+    dbInitializer.SeedData();
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
     app.UseHttpsRedirection();
+
+    app.UseShared();
+    app.UseAuthentication();
+    app.UseAuthorization();
+
     app.MapControllers();
+
     app.Run();
 }
 

@@ -5,12 +5,12 @@ public sealed class UserLogoutCommandHandler : IRequestHandler<UserLogoutCommand
 {
     private readonly IUnitOfWork _uow;
     private readonly ISecurityService _securityService;
-    private readonly IOptionsSnapshot<BearerTokensOptions> _configuration;
+    private readonly IOptions<BearerTokensOptions> _configuration;
     private readonly ITokenFactoryService _tokenFactory;
 
     public UserLogoutCommandHandler(IUnitOfWork uow,
         ISecurityService securityService,
-        IOptionsSnapshot<BearerTokensOptions> configuration,
+        IOptions<BearerTokensOptions> configuration,
         ITokenFactoryService tokenFactory)
     {
         _uow = uow;
@@ -31,7 +31,7 @@ public sealed class UserLogoutCommandHandler : IRequestHandler<UserLogoutCommand
 
         if (!string.IsNullOrWhiteSpace(request.RefreshToken))
         {
-            var refreshTokenSerial = _tokenFactory.GetRefreshTokenSerial(request.RefreshToken);
+            var refreshTokenSerial = _securityService.GetRefreshTokenSerial(request.RefreshToken);
             if (!string.IsNullOrWhiteSpace(refreshTokenSerial))
             {
                 var refreshTokenIdHashSource = _securityService.GetSha256Hash(refreshTokenSerial);

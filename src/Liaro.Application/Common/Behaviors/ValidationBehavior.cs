@@ -1,5 +1,4 @@
-using FluentValidation;
-using MediatR;
+using Liaro.Share.Abstract.Exceptions;
 
 namespace Liaro.Application.Common.Behaviors;
 
@@ -24,7 +23,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
                 .ToList();
 
             if (failures.Count != 0)
-                throw new ValidationException(failures);
+                throw new ValidationsException(failures);
         }
         return await next();
     }

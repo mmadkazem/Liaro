@@ -1,14 +1,16 @@
+using Liaro.Application.Common.Options;
+
 namespace Liaro.Common;
 public static class ApiExtension
 {
     public static IServiceCollection RegisterApiServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
         services
             .AddAuthenticationConfig(configuration)
             .AddSwaggerConfig()
-            .AddCommonConfig()
-            .AddEndpointsApiExplorer()
-            .AddControllers();
+            .AddCommonConfig(configuration);
 
         return services;
     }
@@ -81,14 +83,13 @@ public static class ApiExtension
                 {
                     OnAuthenticationFailed = context =>
                     {
-                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(JwtBearerEvents));
-                        logger.LogError("Authentication failed. Exception:{}", context.Exception);
-                        return Task.CompletedTask;
+                       return Task.CompletedTask;
                     },
                     OnTokenValidated = context =>
                     {
-                        var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
-                        return tokenValidatorService.ValidateAsync(context);
+                        // var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
+                        // return tokenValidatorService.ValidateAsync(context);
+                        return Task.CompletedTask;
                     },
                     OnMessageReceived = context =>
                     {
@@ -96,8 +97,6 @@ public static class ApiExtension
                     },
                     OnChallenge = context =>
                     {
-                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(JwtBearerEvents));
-                        logger.LogError("OnChallenge error Exception:{}, Description:{}", context.Error, context.ErrorDescription);
                         return Task.CompletedTask;
                     }
                 };
@@ -115,11 +114,20 @@ public static class ApiExtension
         return services;
     }
 
-    private static IServiceCollection AddCommonConfig(this IServiceCollection services)
+    private static IServiceCollection AddCommonConfig(this IServiceCollection services, IConfiguration configuration)
     {
 
         services.AddLogging(loggingBuilder =>
             loggingBuilder.AddSerilog(dispose: true));
+
+        services.AddOptions<BearerTokensOptions>()
+                .Bind(configuration.GetSection("BearerTokens"))
+                .Validate(bearerTokens =>
+                {
+                    return bearerTokens.AccessTokenExpirationMinutes < bearerTokens.RefreshTokenExpirationMinutes;
+                }, "RefreshTokenExpirationMinutes is less than AccessTokenExpirationMinutes. Obtaining new tokens using the refresh token should happen only if the access token has expired.");
+        // services.AddOptions<ApiSettings>()
+        //     .Bind(configuration.GetSection("ApiSettings"));
 
         services.Configure<CookiePolicyOptions>(options =>
         {
