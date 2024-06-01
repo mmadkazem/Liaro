@@ -63,8 +63,8 @@ public class DbInitializerService : IDbInitializerService
 
                     var userRoles = new List<UserRole>()
                     {
-                        new UserRole { Role = adminRole, User = adminUser },
-                        new UserRole { Role = userRole, User = adminUser }
+                        new() { Role = adminRole, User = adminUser },
+                        new() { Role = userRole, User = adminUser }
                     };
 
                     userRoles.AddRange(userRoles);

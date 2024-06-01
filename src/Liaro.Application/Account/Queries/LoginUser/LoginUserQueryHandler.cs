@@ -2,8 +2,8 @@
 namespace Liaro.Application.Account.Queries.LoginUser;
 
 
-public class LoginUserQueryHandler(IUnitOfWork uow, ITokenFactoryService tokenFactory)
-     : IRequestHandler<LoginUserQueryRequest, JwtTokensResponse>
+public sealed class LoginUserQueryHandler(IUnitOfWork uow, ITokenFactoryService tokenFactory)
+    : IRequestHandler<LoginUserQueryRequest, JwtTokensResponse>
 {
     private readonly IUnitOfWork _uow = uow;
     private readonly ITokenFactoryService _tokenFactory = tokenFactory;

@@ -2,23 +2,24 @@ namespace Liaro.Domain.Account;
 
 public class User : IEntity
 {
-    public User()
-    {
-        UserRoles = new HashSet<UserRole>();
-        UserTokens = new HashSet<UserToken>();
-    }
+    // public User()
+    // {
+    //     UserRoles = new HashSet<UserRole>();
+    //     UserTokens = new HashSet<UserToken>();
+    // }
+
 
     public int Id { get; set; }
 
-    public required string Username { get; set; }
+    public string? Username { get; set; }
 
-    public required string Password { get; set; }
+    public string? Password { get; set; }
 
-    public required string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     public bool IsActive { get; set; }
 
-    public required string Email { get; set; }
+    public string? Email { get; set; }
 
     public string? Mobile { get; set; }
 
@@ -35,7 +36,7 @@ public class User : IEntity
     /// </summary>
     public string? SerialNumber { get; set; }
 
-    public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
+    public virtual ICollection<UserRole>? UserRoles { get; set; }
 
-    public virtual ICollection<UserToken> UserTokens { get; set; } = new HashSet<UserToken>();
+    public virtual ICollection<UserToken>? UserTokens { get; set; }
 }

@@ -1,10 +1,13 @@
+using Liaro.Application;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
 
 var services = builder.Services;
 {
-           services.RegisterApplicationServices()
+        services
+            .RegisterApplicationServices()
             .RegisterInfrastructureServices(configuration)
             .RegisterSharedServices()
             .RegisterApiServices(configuration);

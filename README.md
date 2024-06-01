@@ -1,4 +1,4 @@
-# ASP.NET Core 8 Advanced Template
+# ASP.NET Core 8 Template
 
 > :wrench: IN PROGRESS...
 

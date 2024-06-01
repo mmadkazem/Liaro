@@ -1,7 +1,7 @@
-namespace Liaro.Application.Common;
+namespace Liaro.Application;
 
 
-public static class RegisterApplicationExtension
+public static class ConfigureServices
 {
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {

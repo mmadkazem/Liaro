@@ -3,7 +3,7 @@ using Liaro.Infrastructure.Persistance;
 
 namespace Liaro.Infrastructure;
 
-public static class InfrastructureExtension
+public static class ConfigureServices
 {
     public static IServiceCollection RegisterInfrastructureServices
         (this IServiceCollection services, IConfiguration configuration)

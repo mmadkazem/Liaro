@@ -83,7 +83,7 @@ public static class ApiExtension
                 {
                     OnAuthenticationFailed = context =>
                     {
-                       return Task.CompletedTask;
+                        return Task.CompletedTask;
                     },
                     OnTokenValidated = context =>
                     {

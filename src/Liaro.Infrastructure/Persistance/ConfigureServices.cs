@@ -1,7 +1,7 @@
 namespace Liaro.Infrastructure.Persistance;
 
 
-internal static class PersistanceExtension
+internal static class ConfigureServices
 {
     public static IServiceCollection RegisterPersistanceServices(this IServiceCollection services, IConfiguration configuration)
     {
