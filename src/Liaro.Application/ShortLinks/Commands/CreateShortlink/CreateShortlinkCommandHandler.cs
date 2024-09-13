@@ -6,18 +6,11 @@ public sealed class CreateShortlinkCommandHandler(IUnitOfWork uow)
 {
     private readonly IUnitOfWork _uow = uow;
 
-    public async Task<string> Handle(CreateShortlinkCommandRequest request, CancellationToken cancellationToken)
+    public async Task<string> Handle(CreateShortlinkCommandRequest request, CancellationToken token)
     {
-        ShortLink shortLink = new()
-        {
-            Source = request.Source,
-            Target = request.Target,
-            Type = Domain.ShortLinks.ShortLinkType.Other,
-            CreatorUserId = request.UserId
-        };
-
+        var source = request.Source;
         // if source of a shortlink was empty, it will generate 4chars unique key for it.
-        if (string.IsNullOrEmpty(request.Source))
+        if (source is null)
         {
             bool exist = true;
             string code = string.Empty;
@@ -25,12 +18,18 @@ public sealed class CreateShortlinkCommandHandler(IUnitOfWork uow)
             while (exist)
             {
                 code = StringUtils.GetUniqueKey(4);
-                exist = await _uow.ShortLinks.AnyAsync(request.Source);
+                exist = await _uow.ShortLinks.AnyAsync(code, token);
             }
-            shortLink.Source = code;
+            source = code;
         }
-        _uow.ShortLinks.Add(shortLink);
-        await _uow.SaveChangeAsync();
-        return shortLink.Source;
+        _uow.ShortLinks.Add(new ShortLink
+        {
+            Source = source,
+            Target = request.Target,
+            CreatorUserId = request.UserId,
+            Type = Domain.ShortLinks.ShortLinkType.Other
+        });
+        await _uow.SaveChangeAsync(token);
+        return source;
     }
 }

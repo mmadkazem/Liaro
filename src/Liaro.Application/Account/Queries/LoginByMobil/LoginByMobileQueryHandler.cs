@@ -15,7 +15,7 @@ public class LoginByMobileQueryHandler
 
     public async Task<JwtTokensResponse> Handle(LoginByMobileQueryRequest request, CancellationToken cancellationToken)
     {
-        var user = await _uow.Users.FindByMobileAndLoginCode(request.Mobile, request.Code);
+        var user = await _uow.Users.FindByMobileAndLoginCodeAsync(request.Mobile, request.Code);
         if (user is null || !user.IsActive)
         {
             throw new InvalidLoginCodeException();

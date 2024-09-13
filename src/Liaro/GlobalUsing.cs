@@ -9,7 +9,7 @@ global using Liaro.Application.Account.Commands.RegisterUser;
 global using Liaro.Application.Account.Queries.LoginByMobil;
 global using Liaro.Application.Account.Commands.UserLogout;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
-// global using Liaro.Application.Account.Queries.LoginUser;
+global using Liaro.Application.Account.Queries.LoginUser;
 global using Liaro.Infrastructure.ExternalServices.Jwt;
 global using Microsoft.AspNetCore.Mvc.ModelBinding;
 global using Microsoft.AspNetCore.Authorization;

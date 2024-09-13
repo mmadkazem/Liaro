@@ -33,5 +33,5 @@ public sealed class RegisterUserCommandValidator : AbstractValidator<RegisterUse
     }
 
     private async Task<bool> UserNameAlreadyExist(string userName, CancellationToken cancellationToken)
-        => await _uow.Users.AnyAsyncUserName(userName);
+        => await _uow.Users.AnyAsyncUserNameAsync(userName);
 }

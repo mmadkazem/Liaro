@@ -7,7 +7,7 @@ public sealed class UserRepository : IUserRepository
     private readonly ISecurityService _securityService;
 
     public UserRepository(ApplicationDbContext context,
-             ISecurityService securityService)
+            ISecurityService securityService)
     {
         _context = context;
 
@@ -18,31 +18,31 @@ public sealed class UserRepository : IUserRepository
     public void Add(User user)
         => _context.Users.Add(user);
 
-    public async Task<bool> AnyAsyncUserName(string userName)
+    public async Task<bool> AnyAsyncUserNameAsync(string userName, CancellationToken token)
         => await _context.Users
                         .AsQueryable()
-                        .Where(u => u.Username == userName).AnyAsync();
+                        .AnyAsync(u => u.Username == userName, token);
 
-    public async Task<User> FindAsync(int userId)
+    public async Task<User> FindAsync(int userId, CancellationToken token)
         => await _context.Users
                         .AsQueryable()
                         .Where(x => x.Id == userId)
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync(token);
 
-    public async Task<User> FindAsyncByMobile(string mobile)
+    public async Task<User> FindAsyncByMobileAsync(string mobile, CancellationToken token)
         => await _context.Users
                         .AsQueryable()
                         .Where(u => u.Mobile == mobile)
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync(token);
 
-    public async Task<User> FindByMobileAndLoginCode(string mobile, string code)
+    public async Task<User> FindByMobileAndLoginCodeAsync(string mobile, string code, CancellationToken token)
         => await _context.Users
                         .AsQueryable()
                         .Where(x => x.Mobile == mobile && x.LoginCode == code)
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync(token);
 
 
-    public async Task<User> FindUserAsync(string username, string password)
+    public async Task<User> FindUserAsync(string username, string password, CancellationToken token)
     {
         var passwordHash = _securityService.GetSha256Hash(password);
         return await _context.Users
@@ -51,10 +51,10 @@ public sealed class UserRepository : IUserRepository
                                     || x.Email.ToLower() == username.ToLower()
                                     || x.Mobile == username)
                                 && x.Password == passwordHash)
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync(token);
     }
 
-    public async Task<List<Role>> FindUserRolesAsync(int userId)
+    public async Task<List<Role>> FindUserRolesAsync(int userId, CancellationToken token)
         => await _context.UserRoles
                         .AsQueryable()
                         .Include(x => x.Role)
@@ -62,7 +62,7 @@ public sealed class UserRepository : IUserRepository
                         .Where(x => x.UserId == userId)
                         .Select(x => x.Role)
                         .OrderBy(x => x.Name)
-                        .ToListAsync();
+                        .ToListAsync(token);
 
     public void Remove(User user)
         => _context.Users.Remove(user);

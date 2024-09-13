@@ -1,4 +1,3 @@
-
 namespace Liaro.Application.ShortLinks.Queries.RedirectOtherId;
 
 
@@ -7,15 +6,7 @@ public sealed class RedirectOtherIdCommandHandler(IUnitOfWork uow)
 {
     private readonly IUnitOfWork _uow = uow;
 
-    public async Task<string> Handle(RedirectOtherIdCommandRequest request, CancellationToken cancellationToken)
-    {
-        var shortLink = await _uow.ShortLinks.FindAsync(request);
-
-        if (shortLink is null)
-        {
-            throw new ShortLinkNotExistException();
-        }
-
-        return shortLink.Target;
-    }
+    public async Task<string> Handle(RedirectOtherIdCommandRequest request, CancellationToken token)
+        => await _uow.ShortLinks.GetTarget(request, token)
+            ?? throw new ShortLinkNotExistException();
 }

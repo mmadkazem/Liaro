@@ -7,5 +7,5 @@ public interface IUnitOfWork
     IUserTokenRepository UserTokens { get; }
     IShortLinkRepository ShortLinks { get; }
 
-    Task SaveChangeAsync();
+    Task SaveChangeAsync(CancellationToken token = default);
 }

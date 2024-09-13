@@ -14,9 +14,9 @@ public sealed class ChangePasswordCommandHandler
         _securityService = securityService;
     }
 
-    public async Task Handle(ChangePasswordCommandRequest request, CancellationToken cancellationToken)
+    public async Task Handle(ChangePasswordCommandRequest request, CancellationToken token)
     {
-        var user = await _uow.Users.FindAsync(request.UserId);
+        var user = await _uow.Users.FindAsync(request.UserId, token);
         var currentPasswordHash = _securityService.GetSha256Hash(request.OldPassword);
         if (user.Password != currentPasswordHash)
         {

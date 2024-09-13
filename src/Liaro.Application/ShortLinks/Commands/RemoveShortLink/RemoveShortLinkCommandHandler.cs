@@ -6,13 +6,10 @@ public sealed class RemoveShortLinkCommandHandler(IUnitOfWork uow)
 {
     private readonly IUnitOfWork _uow = uow;
 
-    public async Task Handle(RemoveShortLinkCommandRequest request, CancellationToken cancellationToken)
+    public async Task Handle(RemoveShortLinkCommandRequest request, CancellationToken token)
     {
-        var shortLink = await _uow.ShortLinks.FindAsync(request);
-        if (shortLink is null)
-        {
-            throw new ShortLinkNotExistException();
-        }
+        var shortLink = await _uow.ShortLinks.FindAsync(request, token)
+            ?? throw new ShortLinkNotExistException();
 
         _uow.ShortLinks.Remove(shortLink);
         await _uow.SaveChangeAsync();

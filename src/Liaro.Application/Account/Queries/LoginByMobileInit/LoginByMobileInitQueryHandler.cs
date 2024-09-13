@@ -15,7 +15,7 @@ public sealed class LoginByMobileInitQueryHandler : IRequestHandler<LoginByMobil
 
     public async Task Handle(LoginByMobileInitQueryRequest request, CancellationToken cancellationToken)
     {
-        var user = await _uow.Users.FindAsyncByMobile(request.Mobile);
+        var user = await _uow.Users.FindAsyncByMobileAsync(request.Mobile);
 
         if (user is null || !user.IsActive)
         {

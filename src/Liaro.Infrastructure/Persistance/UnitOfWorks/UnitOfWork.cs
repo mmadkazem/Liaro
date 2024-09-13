@@ -28,6 +28,6 @@ public sealed class UnitOfWork : IUnitOfWork
     public IShortLinkRepository ShortLinks
         => _shortLinks;
 
-    public async Task SaveChangeAsync()
-        => await _context.SaveChangesAsync();
+    public async Task SaveChangeAsync(CancellationToken token = default)
+        => await _context.SaveChangesAsync(token);
 }

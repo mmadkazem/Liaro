@@ -2,40 +2,43 @@ namespace Liaro.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class RedirectController(ISender sender) : ControllerBase
 {
     private readonly ISender _sender = sender;
 
-    [Authorize(Policy = CustomRoles.Admin)]
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateShortlinkCommandRequest request)
+    public async Task<IActionResult> Create(CreateShortlinkDTO model,
+        CancellationToken token)
     {
-        request.UserId = User.UserId();
-        var result = await _sender.Send(request);
+        var request = CreateShortlinkCommandRequest.Create(User.UserId(), model);
+        var result = await _sender.Send(request, token);
         return Ok(result);
     }
 
-    [Authorize(Policy = CustomRoles.Admin)]
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateShortLinkCommandRequest request)
+    [HttpPut("{id:int:required}")]
+    public async Task<IActionResult> Update(int id, UpdateShortLinkDTO model,
+        CancellationToken token)
     {
-        await _sender.Send(request);
+        var request = UpdateShortLinkCommandRequest.Create(id, model);
+        await _sender.Send(request, token);
         return Ok();
     }
 
-    [Authorize(Policy = CustomRoles.Admin)]
     [HttpDelete("{source}")]
-    public async Task<IActionResult> Remove(RemoveShortLinkCommandRequest request)
+    public async Task<IActionResult> Remove(string source,
+        CancellationToken token)
     {
-        await _sender.Send(request);
+        await _sender.Send(new RemoveShortLinkCommandRequest(source), token);
         return Ok();
     }
 
     [AllowAnonymous]
     [HttpGet("/t/{source}")]
-    public async Task<IActionResult> RedirectOtherId(RedirectOtherIdCommandRequest request)
+    public async Task<IActionResult> RedirectOtherId(string source,
+        CancellationToken token)
     {
-        var result = await _sender.Send(request);
+        var result = await _sender.Send(new RedirectOtherIdCommandRequest(source), token);
         return Redirect(result);
     }
 

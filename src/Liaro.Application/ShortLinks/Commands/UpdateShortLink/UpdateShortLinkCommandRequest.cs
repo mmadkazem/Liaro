@@ -3,5 +3,8 @@ namespace Liaro.Application.ShortLinks.Commands.UpdateShortLink;
 public record UpdateShortLinkCommandRequest(int Id, string Source, string Target)
     : IRequest
 {
-    public int UserId { get; set; }
+    public static UpdateShortLinkCommandRequest Create(int id, UpdateShortLinkDTO model)
+        => new(id, model.Source, model.Target);
 }
+
+public readonly record struct UpdateShortLinkDTO(string Source, string Target);

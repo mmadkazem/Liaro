@@ -1,5 +1,3 @@
-using Liaro.Application.Account.Queries.LoginUser;
-
 namespace Liaro.Controllers;
 
 [ApiController]
@@ -14,7 +12,6 @@ public class AccountController(ISender sender) : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterUserCommandRequest request)
     {
         await _sender.Send(request);
-
         return Ok();
     }
 
@@ -24,7 +21,6 @@ public class AccountController(ISender sender) : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginUserQueryRequest request)
     {
         var result = await _sender.Send(request);
-
         return Ok(result);
 
     }
@@ -35,7 +31,6 @@ public class AccountController(ISender sender) : ControllerBase
         ([FromBody] LoginByMobileInitQueryRequest request)
     {
         await _sender.Send(request);
-
         return Ok();
     }
 
@@ -45,7 +40,6 @@ public class AccountController(ISender sender) : ControllerBase
         ([FromBody] LoginByMobileQueryRequest request)
     {
         var result = await _sender.Send(request);
-
         return Ok(result);
     }
 
@@ -54,20 +48,15 @@ public class AccountController(ISender sender) : ControllerBase
     public async Task<IActionResult> RefreshToken([FromBody] JToken jsonBody)
     {
         LoginByRefreshTokenQueryRequest request = jsonBody.Value<string>("refreshToken");
-
         var result = await _sender.Send(request);
-
         return Ok(result);
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IActionResult> Logout(UserLogoutCommandRequest request)
+    public async Task<IActionResult> Logout(string refreshToken)
     {
-        request.UserId = User.UserId().ToString();
-
-        await _sender.Send(request);
-
+        await _sender.Send(new UserLogoutCommandRequest(User.UserId(), refreshToken));
         return Ok();
     }
 
@@ -90,12 +79,10 @@ public class AccountController(ISender sender) : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> ChangePassword
-        ([FromBody] ChangePasswordCommandRequest request)
+        ([FromBody] ChangePasswordDTO model)
     {
-        request.UserId = User.UserId();
-
+        var request = ChangePasswordCommandRequest.Create(User.UserId(), model);
         await _sender.Send(request);
-
         return Ok();
     }
 }

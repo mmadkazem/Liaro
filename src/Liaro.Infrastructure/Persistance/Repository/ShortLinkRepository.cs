@@ -8,23 +8,26 @@ public sealed class ShortLinkRepository(ApplicationDbContext context) : IShortLi
     public void Add(ShortLink shortLink)
         => _context.ShortLinks.Add(shortLink);
 
-    public async Task<bool> AnyAsync(string source)
-        => await _context.ShortLinks
-                    .AsQueryable()
-                    .IgnoreQueryFilters()
-                    .AnyAsync(x => x.Source == source);
+    public async Task<bool> AnyAsync(string source, CancellationToken token)
+        => await _context.ShortLinks.AsQueryable()
+                                    .IgnoreQueryFilters()
+                                    .AnyAsync(x => x.Source == source, token);
 
-    public async Task<ShortLink> FindAsync(string source)
-        => await _context.ShortLinks
-                    .AsQueryable()
-                    .Where(s => s.Source == source)
-                    .SingleOrDefaultAsync();
+    public async Task<ShortLink> FindAsync(string source, CancellationToken token)
+        => await _context.ShortLinks.AsQueryable()
+                                    .Where(s => s.Source == source)
+                                    .SingleOrDefaultAsync(token);
 
-    public async Task<ShortLink> FindAsync(int id)
-        => await _context.ShortLinks
-                    .AsQueryable()
-                    .Where(s => s.Id == id)
-                    .SingleOrDefaultAsync();
+    public async Task<ShortLink> FindAsync(int id, CancellationToken token)
+        => await _context.ShortLinks.AsQueryable()
+                                    .Where(s => s.Id == id)
+                                    .SingleOrDefaultAsync(token);
+
+    public async Task<string> GetTarget(string source, CancellationToken token)
+        => await _context.ShortLinks.AsQueryable()
+                                    .Where(s => s.Source == source)
+                                    .Select(s => s.Target)
+                                    .FirstOrDefaultAsync(token);
 
     public void Remove(ShortLink shortLink)
         => _context.ShortLinks.Remove(shortLink);

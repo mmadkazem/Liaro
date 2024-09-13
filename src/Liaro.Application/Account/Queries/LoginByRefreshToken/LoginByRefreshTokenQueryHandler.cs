@@ -18,16 +18,17 @@ public sealed class LoginByRefreshTokenQueryHandler
 
     public async Task<JwtTokensResponse> Handle(LoginByRefreshTokenQueryRequest request, CancellationToken cancellationToken)
     {
-        var token = await _uow.UserTokens.FindTokenAsync(request);
-        if (token is null)
-        {
-            throw new UserNotExistException();
-        }
+        var token = await _uow.UserTokens.FindTokenAsync(request, cancellationToken)
+            ?? throw new UserNotExistException();
 
         var result = await _tokenFactory.CreateJwtTokensAsync(token.User);
         await _uow.UserTokens
-                .AddUserTokenAsync(token.User, result.RefreshTokenSerial, result.AccessToken,
-                _securityService.GetRefreshTokenSerial(request.RefreshToken));
+                .AddUserTokenAsync
+                (
+                    token.User, result.RefreshTokenSerial, result.AccessToken,
+                    _securityService.GetRefreshTokenSerial(request.RefreshToken),
+                    cancellationToken
+                );
 
         return new(result.AccessToken, result.RefreshToken);
     }
